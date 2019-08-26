@@ -25,7 +25,7 @@
 
 	<param name="startX" type="int" value="1" />
 	<param name="startY" type="int" value="1" />
-	<param name="endX" type="int" value="13" />
+	<param name="endX" type="int" value="12" />
 	<param name="endY" type="int" value="3" />
 
 	<param name="K_psi" type="double" value="1.0" />
@@ -33,5 +33,8 @@
 	<param name="p" type="double" value="1" />
 	<param name="desired_ang_vel" type="double" value="0.1" />
 	<param name="correction_factor" type="double" value="0.85" />
+
+    <param name="x_offset" type="double" value="0.2" />
+    <param name="y_offset" type="double" value="5.075" />
 
 </launch>  

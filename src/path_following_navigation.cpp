@@ -41,7 +41,7 @@ private:
 
     int Width;
     int Height;
-    float cell_size = 0.40;
+    float cell_size;
 
     int endX, endY;
     int startX, startY;
@@ -64,6 +64,8 @@ private:
     float K_psi;    // Angular error
     float p;         // Recovery speed during line following
     float theta_ref;
+
+    float x_offset, y_offset;
 
 
     enum CONTROLLER_STATE
@@ -112,7 +114,7 @@ private:
             }else{
                 my_p = final_path.front();
                 final_path.pop_front();
-                x_goal = Width*cell_size-(Width-(my_p.second))*cell_size+0.075;
+                x_goal = Width*cell_size-(Width-(my_p.second))*cell_size+cell_size/2;
                 y_goal = Height*cell_size-(my_p.first)*cell_size-cell_size/2;
             }
             done_flag = false;
@@ -172,7 +174,7 @@ private:
         nav_msgs::MapMetaData info = msg->info;
         ROS_INFO("Got map %d %d", info.width, info.height);
 
-
+        cell_size = info.resolution;
         Width = info.width, Height = info.height;
         int cols = info.width, rows = info.height;
         auto p = [&](int x, int y) { return x * cols + y;  };
@@ -267,9 +269,9 @@ private:
                 // Check north west
                 if((x-1) >= 0 && (y-1) >= 0  && C[x-1][y-1] == 0){
                     new_nodes.push_back({x-1,y-1,d+1});
-                }*/
+                }
 
-
+                */
             }
             // Sort the nodes - This will stack up nodes that are similar: A, B, B, B, B, C, D, D, E, F, F
             new_nodes.sort([&](const std::tuple<int, int, int> &n1, const std::tuple<int, int, int> &n2)
@@ -352,8 +354,8 @@ private:
             // Check north west
             if((locX-1) >= 0 && (locY-1) >= 0  && C[locX-1][locY-1] > 0){
                 listNeighbours.push_back({locX-1,locY-1,C[locX-1][locY-1]});
-            }*/
-
+            }
+			*/
 
             listNeighbours.sort([&](const std::tuple<int, int, int> &n1, const std::tuple<int, int, int> &n2)
             {
@@ -429,8 +431,8 @@ private:
         tf::Matrix3x3 m(q);
         double roll, pitch, yaw;
         m.getRPY(roll, pitch, yaw);
-        x = (msg->pose.pose.position.x)+0.15;
-        y = (msg->pose.pose.position.y)+5.145;
+        x = (msg->pose.pose.position.x)+x_offset; //0.2
+        y = (msg->pose.pose.position.y)+y_offset; //5.175;
         theta = yaw;
         //std::cout << "YAW" << yaw << "\n";
         pos_set = true;
@@ -459,6 +461,9 @@ public:
         this->n.getParam("/K_psi", K_psi);
         this->n.getParam("/K_omega", K_omega);
         this->n.getParam("/p", p);
+        this->n.getParam("/x_offset", x_offset);
+        this->n.getParam("/y_offset", y_offset);
+        
     }
 
     void run(){
